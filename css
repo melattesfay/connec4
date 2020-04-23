@@ -1,0 +1,229 @@
+Skip to content
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@melattesfay 
+bryanbraun
+/
+connect-four
+2
+1319
+ Code Issues 4 Pull requests 0 Actions Projects 0 Wiki Security 0 Insights
+🎨 design polishing, including a contenteditable bug fix
+
+ gh-pages
+@bryanbraun
+bryanbraun committed on May 11, 2019 
+1 parent 7946962 commit c96898cb34621e5ab3697a05e11895f6d4e6e7a2
+Showing  with 55 additions and 27 deletions.
+ 57  css/main.css 
+@@ -1,11 +1,16 @@
+body {
+  font-family: 'Palatino', 'Garamond', serif;
+  font-family: 'Nunito', 'Helvetica Neue', sans-serif;
+  padding: 0.1px; /* prevent margin overflow */
+  margin: 0;
+}
+
+.title {
+  font-size: 2em;
+  font-size: 2rem;
+}
+@media (max-width: 460px) {
+  .title {
+    font-size: 1.66rem;
+  }
+}
+
+.wrapper {
+@@ -33,10 +38,12 @@ body {
+}
+
+.board button {
+  display: block;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 0;
+  margin: 1px;
+  background: #bbb;
+}
+.board button:hover {
+@@ -82,7 +89,6 @@ body {
+  background: mediumseagreen;
+  color: white;
+  text-decoration: none;
+  font-family: helvetica;
+  opacity: 0.9;
+}
+.play-again-btn:hover,
+@@ -95,12 +101,19 @@ body {
+
+.top-text {
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+@media (max-width: 460px) {
+  .top-text {
+    font-size: 1.3em;
+    font-size: 0.66rem;
+  }
+}
+
+.primary {
+  color: black;
+  margin: 0 0 0.75rem;
+  font-weight: normal;
+}
+.primary .red,
+.primary .black {
+  position: relative;
+@@ -113,39 +126,43 @@ body {
+  content: "";
+  position: absolute;
+  right: 6px;
+  top: 4px;
+  top: 8px;
+  border-radius: 50%;
+}
+.primary [contenteditable="true"] {
+  border-bottom: 1px solid black;
+  padding: 0 1.25em 0 0.25em;
+}
+.primary [contenteditable="true"].red::after {
+  background: linear-gradient(to bottom, #ff1616 0%,#ad0505 100%);
+}
+.primary [contenteditable="true"].black::after {
+  background: linear-gradient(to bottom, #333 0%,#000000 100%);
+}
+
+.primary {
+  color: black;
+  margin: 0 0 0.75rem;
+}
+.primary [contenteditable="true"] {
+  border-bottom: 1px solid black;
+  padding: 0 50px 0 6px;
+}
+.secondary {
+  color: #bbb;
+  margin: 0;
+  font-weight: normal;
+}
+.secondary [contenteditable="true"] {
+  border-bottom: 1px solid #bbb;
+  padding: 0 50px 0 5px;
+  padding: 0 1.25em 0 0.25em;
+}
+
+.code {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+
+  font-size: 12px;
+  color: #bbb;
+  padding: 4px 8px;
+  background: rgba(255,255,255,0.75);
+}
+
+.center {
+  text-align: center;
+}
+.left {
+  text-align: left;
+}
+.right {
+  text-align: right;
+}
+ BIN +1.12 KB favicon.ico 
+Binary file not shown.
+ 3  index.html 
+@@ -7,6 +7,7 @@
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://fonts.googleapis.com/css?family=Nunito:400,700" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="css/main.css">
+  <style id="a11y-styles"></style>
+</head>
+@@ -89,8 +90,8 @@ <h3 class="secondary">
+        </tr>
+      </tbody>
+    </table>
+    <a class="code" href="https://github.com/bryanbraun/connect-four">See the code</a>
+  </section>
+  <a href="https://github.com/bryanbraun/connect-four"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
+
+  <script src="js/vars.js"></script>
+  <script src="js/functions.js"></script>
+ 15  js/functions.js 
+@@ -71,11 +71,24 @@ Game.do = (function() {
+    return y_pos;
+  }
+
+  /**
+   * Handle edge-cases in name changes
+   * @param event
+   */
+  function handleNameChange(event) {
+    // Prevent the default "newline" behavior when hitting "Enter"
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      document.body.focus();
+    }
+  }
+
+  return {
+    addDiscToBoard,
+    printBoard,
+    changePlayer,
+    dropToBottom
+    dropToBottom,
+    handleNameChange
+  };
+})();
+
+ 7  js/main.js 
+@@ -10,13 +10,10 @@
+  var playAgainBtnEl = document.querySelector('#play-again-btn');
+  var gameBoardEl = document.querySelector('#board');
+
+  currentPlayerNameEl.classList.add("black");
+  otherPlayerNameEl.classList.add("red");
+
+  playAgainBtnEl.addEventListener('click', () => location.reload());
+  gameBoardEl.addEventListener('click', placeGamePiece);
+  currentPlayerNameEl.addEventListener("input", Game.do.handleNameChange);
+  otherPlayerNameEl.addEventListener("input", Game.do.handleNameChange);
+  currentPlayerNameEl.addEventListener("keydown", Game.do.handleNameChange);
+  otherPlayerNameEl.addEventListener("keydown", Game.do.handleNameChange);
+
+  function placeGamePiece(e) {
+    if (e.target.tagName !== 'BUTTON') return;
+0 comments on commit c96898c
+@melattesfay
+ 
+ 
+Leave a comment
+
+Attach files by dragging & dropping, selecting or pasting them.
+ You’re not receiving notifications from this thread.
+© 2020 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
